@@ -1,7 +1,9 @@
 package com.nilton.gerenciamento_assinatura.model;
 
+import com.nilton.gerenciamento_assinatura.enums.StatusPagamento;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -15,6 +17,8 @@ import java.time.LocalDate;
 @Table(name = "historico_pagamentos")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class HistoricoPagamento {
 
     @Id
@@ -24,28 +28,31 @@ public class HistoricoPagamento {
     private Long id;
 
     @Column(name = "valor_pago", nullable = false)
-    @PositiveOrZero
+    @NotNull(message = "O valor pago é obrigatório")
+    @PositiveOrZero(message = "O valor não pode ser negativo")
     private BigDecimal valorPago;
 
     @Column(name = "data_pagamento", nullable = false)
-    @PastOrPresent
+    @NotNull(message = "Obrigatório a data de pagamento")
+    @PastOrPresent(message = "A data de pagamento não pode ser no futuro")
     private LocalDate dataPagamento;
 
-    @Column(name = "status", nullable = false)
-    @NotBlank
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statusPagamento", nullable = false, length = 30)
+    @NotNull(message = "O status do pagamento é obrigatório")
+    private StatusPagamento statusPagamento;
 
     @ManyToOne
     @JoinColumn(name = "assinatura_id", nullable = false)
+    @NotNull(message = "O histórico deve estar vinculado a uma assinatura")
     private Assinatura assinatura;
 
 
-    public HistoricoPagamento(BigDecimal valorPago, LocalDate dataPagamento, String status) {
+    /*public HistoricoPagamento(BigDecimal valorPago, LocalDate dataPagamento, String status, Assinatura assinatura) {
         this.valorPago = valorPago;
         this.dataPagamento = dataPagamento;
         this.status = status;
-    }
+        this.assinatura = assinatura;
+    }*/
 
-
-    /*private BigDecimal valorAnterior;*/
 }

@@ -1,4 +1,12 @@
 package com.nilton.gerenciamento_assinatura.dto.UserDTO;
 
-public record UserLoginDTO(String email, String senha) {
+import jakarta.validation.constraints.NotBlank;
+
+public record UserLoginDTO(
+
+        @NotBlank(message = "É necessário informar o email.")
+        String email,
+
+        @NotBlank(message = "É necessário informar uma senha.")
+        String senha) {
 }

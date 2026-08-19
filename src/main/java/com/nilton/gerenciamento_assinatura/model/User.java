@@ -1,15 +1,19 @@
 package com.nilton.gerenciamento_assinatura.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nilton.gerenciamento_assinatura.enums.Perfil;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -18,10 +22,12 @@ import java.util.List;
 @Table(name = "Usuarios")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true) // 3. Prepara o equals seguro
 @NoArgsConstructor
-public class User {
+@AllArgsConstructor
+@Builder
+public class User implements UserDetails {
 
-    public interface CreateUser{}
-    public interface UpdateUser{}
+    /*public interface CreateUser{}
+    public interface UpdateUser{}*/
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,36 +35,98 @@ public class User {
     @Column(name = "id", unique = true)
     private Long id;
 
-    @Column(name = "nome_usuario", length = 10, nullable = false)
-    @NotNull(groups = CreateUser.class)
-    @NotEmpty(groups = CreateUser.class)
-    private String username;
+    @Column(name = "nome_usuario", length = 50, nullable = false)
+    @NotBlank(message = "É necessário informar um username")
+    @Size(min = 2, max = 50, message = "O nome deve ter entre 2 e 50 caracteres")
+    @Pattern(regexp = "^(?=(?:.*[\\p{L}]){2}).*$",
+            message = "O nome deve conter pelo menos 2 letras (números e caracteres especiais são permitidos)")
+    private String nome;
 
     @Column(name = "email", length = 320, unique = true, nullable = false)
-    @NotNull(groups = CreateUser.class)
-    @NotEmpty(groups = CreateUser.class)
+    @NotBlank(message = "É necessário informar um email.")
+    @Email(message = "É necessário informar um email válido")
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "senha", length = 16, nullable = false, unique = true)
-    @NotNull(groups = {CreateUser.class, UpdateUser.class})
-    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
-    @Size(min = 6, max = 16)
+    @Column(name = "senha", length = 255, nullable = false)
+    @NotBlank(message = "É necessário informar uma senha")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$",
+            message = "A senha deve ter no mínimo 8 caracteres, uma maiúscula, uma minúscula, um número e um caractere especial"
+    )
     private String senha;
 
-    private LocalDateTime dataCadastro = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "dataCadastro",updatable = false, nullable = false)
+    private LocalDateTime dataCadastro;
 
     @OneToMany(mappedBy = "user")
-    private List<Assinatura> assinatura = new ArrayList<>();
+    @Builder.Default
+    private List<Assinatura> assinaturas = new ArrayList<>();
 
+
+
+    @FutureOrPresent(message = "A expiração do token deve ser uma data futura")
+    @Column(name = "expiracao_token")
+    private LocalDateTime expiracaoToken;
+
+    @Builder.Default
+    @Column(name = "ativo", nullable = false)
     private boolean ativo = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "perfil", nullable = false)
+    private Perfil perfil;
 
-    public User(long id, String username, String email, String senha, LocalDateTime dataCadastro) {
+    @Column(name = "token", unique = true, length = 255)
+    @Size(max = 255, message = "O token deve ter no máximo 255 caracteres")
+    private String resetToken;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+
+    @Override
+    public String getPassword() {
+        return senha; //
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+
+    /*public User(long id, String username, String email, String senha, LocalDateTime dataCadastro) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.senha = senha;
         this.dataCadastro = dataCadastro;
-    }
+    }*/
 }

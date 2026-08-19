@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Nao subir as senhas pro git ###
+src/main/resources/application.yml
+
 ### STS ###
 .apt_generated
 .classpath
