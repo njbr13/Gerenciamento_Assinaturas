@@ -1,4 +1,4 @@
-package com.nilton.gerenciamento_assinatura.dto.UserDTO;
+package com.nilton.gerenciamento_assinatura.dto.UserDTO.response;
 
 import com.nilton.gerenciamento_assinatura.model.User;
 

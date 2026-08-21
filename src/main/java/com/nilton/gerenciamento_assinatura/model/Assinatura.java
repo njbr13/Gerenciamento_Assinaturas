@@ -1,5 +1,6 @@
 package com.nilton.gerenciamento_assinatura.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nilton.gerenciamento_assinatura.enums.CategoriaAssinatura;
 import  jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -36,6 +37,7 @@ public class Assinatura {
     @NotNull(message = "A assinatura deve ser vinculada a um usuário")
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "assinatura", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<HistoricoPagamento> historicos = new ArrayList<>();

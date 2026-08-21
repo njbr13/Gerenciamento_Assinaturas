@@ -7,7 +7,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.nilton.gerenciamento_assinatura.model.User;
+import jakarta.validation.constraints.FutureOrPresent;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +62,9 @@ public class TokenService {
     private Instant gerarDataExpiracao() {
         // Define que o token expira em 2 horas a partir do momento da criação.
         // O ZoneOffset.of("-03:00") ajusta para o horário de Brasília.
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+
+        LocalDateTime duracao = LocalDateTime.now().plusHours(2);
+
+        return duracao.toInstant(ZoneOffset.of("-03:00"));
     }
 }

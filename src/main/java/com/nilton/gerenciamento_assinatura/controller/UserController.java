@@ -2,7 +2,10 @@ package com.nilton.gerenciamento_assinatura.controller;
 
 
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.*;
+import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseDTO;
+import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseLoginDTO;
 import com.nilton.gerenciamento_assinatura.model.User;
+import com.nilton.gerenciamento_assinatura.service.AutentificacaoService;
 import com.nilton.gerenciamento_assinatura.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -21,6 +23,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AutentificacaoService autentificacaoService;
+
     @PostMapping("/cadastrar")
     public ResponseEntity<UserResponseDTO> cadastrar(@RequestBody @Valid UserCreateDTO dados){
 
@@ -30,13 +35,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCadastrado);
     }
 
-    /*@PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody @Valid UserLoginDTO dados){
+    @PostMapping("/login")
+    public ResponseEntity<UserResponseLoginDTO> login(@RequestBody @Valid UserLoginDTO dados){
 
-        User user = userService.userLogin(dados);
+        UserResponseLoginDTO response = autentificacaoService.realizarLogin(dados);
 
-        return ResponseEntity.ok(user);
-    }*/
+        return ResponseEntity.ok(response);
+    }
 
     @PutMapping("/atualizar-perfil")
     public ResponseEntity<User> atualizarPerfil(@RequestBody @Valid UserUptadeDTO dados,

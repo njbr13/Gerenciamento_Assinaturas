@@ -1,5 +1,6 @@
 package com.nilton.gerenciamento_assinatura.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nilton.gerenciamento_assinatura.enums.Perfil;
 import jakarta.persistence.*;
@@ -60,10 +61,10 @@ public class User implements UserDetails {
     @Column(name = "dataCadastro",updatable = false, nullable = false)
     private LocalDateTime dataCadastro;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     @Builder.Default
     private List<Assinatura> assinaturas = new ArrayList<>();
-
 
 
     @FutureOrPresent(message = "A expiração do token deve ser uma data futura")

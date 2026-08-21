@@ -1,5 +1,6 @@
 package com.nilton.gerenciamento_assinatura.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nilton.gerenciamento_assinatura.enums.StatusPagamento;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -43,6 +44,7 @@ public class HistoricoPagamento {
     private StatusPagamento statusPagamento;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "assinatura_id", nullable = false)
     @NotNull(message = "O histórico deve estar vinculado a uma assinatura")
     private Assinatura assinatura;
