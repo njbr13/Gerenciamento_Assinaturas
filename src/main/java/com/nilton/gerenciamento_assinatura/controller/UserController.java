@@ -4,6 +4,8 @@ package com.nilton.gerenciamento_assinatura.controller;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.*;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseDTO;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseLoginDTO;
+import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseRedefinirDTO;
+import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseResetDTO;
 import com.nilton.gerenciamento_assinatura.model.User;
 import com.nilton.gerenciamento_assinatura.service.AutentificacaoService;
 import com.nilton.gerenciamento_assinatura.service.UserService;
@@ -61,18 +63,26 @@ public class UserController {
     }
 
     @PostMapping("/esqueci-minha-senha")
-    public ResponseEntity<Void> solicitarResetDeSenha(@RequestBody @Valid UserSolicitarResetDTO dados) {
+    public ResponseEntity<UserResponseResetDTO> solicitarResetDeSenha(@RequestBody @Valid UserSolicitarResetDTO dados) {
 
         userService.userSolicitarResetSenha(dados);
 
-        return ResponseEntity.ok().build();
+        String confirmacao = "Token enviado ao email:" + dados.email()
+                + ". Não esqueça de verificar a caixa de SPAM";
+
+        UserResponseResetDTO userResponseResetDTO = new UserResponseResetDTO(confirmacao);
+        return ResponseEntity.status(200).body(userResponseResetDTO);
+       // return ResponseEntity.ok().build();
     }
 
     @PostMapping("/redefinir-senha")
-    public ResponseEntity<Void> redefinirSenha(@RequestBody @Valid UserRedefinirSenhaDTO dados){
+    public ResponseEntity<UserResponseRedefinirDTO> redefinirSenha(@RequestBody @Valid UserRedefinirSenhaDTO dados){
         userService.userEsquecerSenha(dados);
 
-        return ResponseEntity.ok().build();
+        String confirmacao = "Senha atualizada com Sucesso. Não se esqueça";
+        UserResponseRedefinirDTO userResponseRedefinirDTO = new UserResponseRedefinirDTO(confirmacao);
+        return ResponseEntity.status(200).body(userResponseRedefinirDTO);
+        //return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/minha-conta")

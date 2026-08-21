@@ -130,11 +130,19 @@ public class UserService {
     public void userEsquecerSenha(UserRedefinirSenhaDTO userRedefinir){
         User user = findByResetToken(userRedefinir.token());
 
+        if(user.getResetToken() == null || !user.getResetToken().equals(userRedefinir.token())){
+            throw new RuntimeException("Token inválido. Tente Novamente");
+        }
+
         if(user.getExpiracaoToken().isBefore(LocalDateTime.now())){
             throw new RuntimeException("Token expirado. Tente novamente uma redefinição de senha");
 
         }
+        if(passwordEncoder.matches(userRedefinir.novaSenha(), user.getSenha())){
+            throw new RuntimeException("Senha igual a alguma das anteriores. Tente outra");
+        }
         String senhaNovaCriptografada = passwordEncoder.encode(userRedefinir.novaSenha());
+
         user.setSenha(senhaNovaCriptografada);
 
         user.setResetToken(null);
