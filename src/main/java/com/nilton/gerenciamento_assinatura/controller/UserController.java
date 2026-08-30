@@ -1,6 +1,6 @@
 package com.nilton.gerenciamento_assinatura.controller;
 
-
+import com.nilton.gerenciamento_assinatura.core.ApiResponse;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.*;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseDTO;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseLoginDTO;
@@ -29,16 +29,15 @@ public class UserController {
     private AutentificacaoService autentificacaoService;
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<UserResponseDTO> cadastrar(@RequestBody @Valid UserCreateDTO dados){
+    public ResponseEntity<ApiResponse> cadastrar(@RequestBody @Valid UserCreateDTO dados) {
 
         User novoUsuario = userService.userCreate(dados);
 
-        UserResponseDTO usuarioCadastrado = new UserResponseDTO(novoUsuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCadastrado);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>("Usuario criado com sucesso!", dados));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponseLoginDTO> login(@RequestBody @Valid UserLoginDTO dados){
+    public ResponseEntity<UserResponseLoginDTO> login(@RequestBody @Valid UserLoginDTO dados) {
 
         UserResponseLoginDTO response = autentificacaoService.realizarLogin(dados);
 
@@ -46,43 +45,46 @@ public class UserController {
     }
 
     @PutMapping("/atualizar-perfil")
-    public ResponseEntity<User> atualizarPerfil(@RequestBody @Valid UserUptadeDTO dados,
-    @AuthenticationPrincipal User usuarioLogado){
+    public ResponseEntity<ApiResponse> atualizarPerfil(@RequestBody @Valid UserUptadeDTO dados,
+            @AuthenticationPrincipal User usuarioLogado) {
+
+        System.out.println("EMAIL QUE CHEGOU: " + dados.email()); // Adicione isso!
+        System.out.println("ID LOGADO: " + usuarioLogado.getId());
 
         User userUpdate = userService.userUpdate(usuarioLogado.getId(), dados);
 
-        return ResponseEntity.ok(userUpdate);
+        UserResponseDTO resposta = new UserResponseDTO(userUpdate);
+
+        return ResponseEntity.ok(new ApiResponse<>("Usuário atualizado com sucesso", resposta));
     }
 
     @PatchMapping("/trocar-senha")
-    public ResponseEntity<Void> trocarSenhaLogago(@RequestBody @Valid UserTrocarSenhaLogadoDTO dados, @AuthenticationPrincipal User usuarioLogado){
+    public ResponseEntity<ApiResponse> trocarSenhaLogago(@RequestBody @Valid UserTrocarSenhaLogadoDTO dados,
+            @AuthenticationPrincipal User usuarioLogado) {
 
         User user = userService.userTrocarSenhaLogado(usuarioLogado.getId(), dados);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiResponse<>("Senha trocada com sucesso", null));
     }
 
     @PostMapping("/esqueci-minha-senha")
-    public ResponseEntity<UserResponseResetDTO> solicitarResetDeSenha(@RequestBody @Valid UserSolicitarResetDTO dados) {
+    public ResponseEntity<ApiResponse> solicitarResetDeSenha(@RequestBody @Valid UserSolicitarResetDTO dados) {
 
         userService.userSolicitarResetSenha(dados);
 
         String confirmacao = "Token enviado ao email:" + dados.email()
                 + ". Não esqueça de verificar a caixa de SPAM";
 
-        UserResponseResetDTO userResponseResetDTO = new UserResponseResetDTO(confirmacao);
-        return ResponseEntity.status(200).body(userResponseResetDTO);
-       // return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new ApiResponse<>(confirmacao, null));
+        // return ResponseEntity.ok().build();
     }
 
     @PostMapping("/redefinir-senha")
-    public ResponseEntity<UserResponseRedefinirDTO> redefinirSenha(@RequestBody @Valid UserRedefinirSenhaDTO dados){
+    public ResponseEntity<ApiResponse> redefinirSenha(@RequestBody @Valid UserRedefinirSenhaDTO dados) {
         userService.userEsquecerSenha(dados);
 
         String confirmacao = "Senha atualizada com Sucesso. Não se esqueça";
-        UserResponseRedefinirDTO userResponseRedefinirDTO = new UserResponseRedefinirDTO(confirmacao);
-        return ResponseEntity.status(200).body(userResponseRedefinirDTO);
-        //return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new ApiResponse(confirmacao, null));
     }
 
     @DeleteMapping("/minha-conta")
@@ -93,5 +95,4 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-   
 }
