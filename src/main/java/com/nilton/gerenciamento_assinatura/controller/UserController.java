@@ -4,8 +4,6 @@ import com.nilton.gerenciamento_assinatura.core.ApiResponse;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.*;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseDTO;
 import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseLoginDTO;
-import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseRedefinirDTO;
-import com.nilton.gerenciamento_assinatura.dto.UserDTO.response.UserResponseResetDTO;
 import com.nilton.gerenciamento_assinatura.model.User;
 import com.nilton.gerenciamento_assinatura.service.AutentificacaoService;
 import com.nilton.gerenciamento_assinatura.service.UserService;
