@@ -1,6 +1,7 @@
 package com.nilton.gerenciamento_assinatura.controller;
 
 import com.nilton.gerenciamento_assinatura.core.ApiResponse;
+import com.nilton.gerenciamento_assinatura.dto.CategoriaGastoDTO;
 import com.nilton.gerenciamento_assinatura.dto.AssinaturaDTO.CreateAssinaturaDTO;
 import com.nilton.gerenciamento_assinatura.dto.AssinaturaDTO.UpdateAssinaturaDTO;
 import com.nilton.gerenciamento_assinatura.dto.AssinaturaDTO.response.AssinaturaResponseDTO;
@@ -82,5 +83,14 @@ public class AssinaturaController {
 
         return ResponseEntity.ok(new ApiResponse<>("Assinatura deletada com sucesso", null));
     }
+
+    @GetMapping("/gastos-por-categoria")
+    public ResponseEntity<ApiResponse<List<CategoriaGastoDTO>>>listarGastosPorCategoria(@AuthenticationPrincipal User usuarioLogado) {
+        
+        List<CategoriaGastoDTO> gastos = assinaturaService.obterGastosPorCategoria(usuarioLogado);
+        
+        return ResponseEntity.ok(new ApiResponse<>("Gastos calculados com sucesso!", gastos));
+    }
+
 
 }

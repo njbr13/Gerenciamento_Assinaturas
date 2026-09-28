@@ -1,16 +1,23 @@
 package com.nilton.gerenciamento_assinatura.service;
 
+import com.nilton.gerenciamento_assinatura.dto.CategoriaGastoDTO;
 import com.nilton.gerenciamento_assinatura.dto.AssinaturaDTO.CreateAssinaturaDTO;
 import com.nilton.gerenciamento_assinatura.dto.AssinaturaDTO.UpdateAssinaturaDTO;
+import com.nilton.gerenciamento_assinatura.enums.CategoriaAssinatura;
 import com.nilton.gerenciamento_assinatura.model.Assinatura;
 import com.nilton.gerenciamento_assinatura.model.User;
 import com.nilton.gerenciamento_assinatura.repository.AssinaturaRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,6 +102,56 @@ public class AssinaturaService {
 
     }
 
-    
+    public List<CategoriaGastoDTO> obterGastosPorCategoria(User usuarioLogado) {
+        List<Assinatura> assinaturas = assinaturaRepository.findByUser_id(usuarioLogado.getId());
+        
+        Map<CategoriaAssinatura, BigDecimal> somaPorCategoria = new HashMap<>();
+        BigDecimal totalGeral = BigDecimal.ZERO;
+
+       
+        for (Assinatura assinatura : assinaturas) {
+            if (assinatura.getAtiva()) { 
+                CategoriaAssinatura cat = assinatura.getCategoriaAssinatura();
+                BigDecimal valor = assinatura.getValor();
+                
+                
+                BigDecimal valorAtual = somaPorCategoria.getOrDefault(cat, BigDecimal.ZERO);
+                somaPorCategoria.put(cat, valorAtual.add(valor));
+                
+              
+                totalGeral = totalGeral.add(valor);
+            }
+        }
+
+       
+        List<CategoriaGastoDTO> resultado = new ArrayList<>();
+        
+        for (Map.Entry<CategoriaAssinatura, BigDecimal> entry : somaPorCategoria.entrySet()) {
+            CategoriaAssinatura categoria = entry.getKey();
+            BigDecimal totalCategoria = entry.getValue();
+            
+            Double porcentagem = 0.0;
+           
+            if (totalGeral.compareTo(BigDecimal.ZERO) > 0) {
+                porcentagem = (totalCategoria.doubleValue() / totalGeral.doubleValue()) * 100.0;
+                porcentagem = Math.round(porcentagem * 100.0) / 100.0; 
+            }
+            
+            resultado.add(new CategoriaGastoDTO(categoria, totalCategoria, porcentagem));
+        }
+
+      
+        Collections.sort(resultado, new Comparator<CategoriaGastoDTO>() {
+            @Override
+            public int compare(CategoriaGastoDTO c1, CategoriaGastoDTO c2) {
+              
+                return c2.getValorTotal().compareTo(c1.getValorTotal()); 
+            }
+        });
+
+        return resultado;
+    }
+
+
 
 }
