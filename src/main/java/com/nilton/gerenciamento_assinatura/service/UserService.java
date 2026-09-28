@@ -16,6 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.management.RuntimeErrorException;
+
 @Service
 public class UserService {
 
@@ -68,8 +70,12 @@ public class UserService {
     }
 
     @Transactional
-    public User userUpdate(Long id, UserUptadeDTO uptadeDTO) {
-        User newUser = this.findByID(id);
+    public User userUpdate(Long id, UserUptadeDTO uptadeDTO, User usuarioLogado) {
+        User newUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (!newUser.getId().equals(usuarioLogado.getId())) {
+            throw new RuntimeException("Acesso negado: Você não tem permissão para alterar este usuario.");
+        }
         if (uptadeDTO.username() != null && !uptadeDTO.username().isBlank()
                 && !Objects.equals(newUser.getNome(), uptadeDTO.username())) {
             if (userRepository.findByNome(uptadeDTO.username()).isPresent()) {

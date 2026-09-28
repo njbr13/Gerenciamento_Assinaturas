@@ -49,7 +49,7 @@ public class UserController {
         System.out.println("EMAIL QUE CHEGOU: " + dados.email()); // Adicione isso!
         System.out.println("ID LOGADO: " + usuarioLogado.getId());
 
-        User userUpdate = userService.userUpdate(usuarioLogado.getId(), dados);
+        User userUpdate = userService.userUpdate(usuarioLogado.getId(), dados, usuarioLogado);
 
         UserResponseDTO resposta = new UserResponseDTO(userUpdate);
 

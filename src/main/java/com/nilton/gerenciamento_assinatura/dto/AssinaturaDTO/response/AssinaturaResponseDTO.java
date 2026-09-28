@@ -10,7 +10,8 @@ public record AssinaturaResponseDTO(
         String nomeAssinatura,
         BigDecimal valor,
         LocalDate dataVencimento,
-        CategoriaAssinatura categoria
+        CategoriaAssinatura categoria,
+        Boolean ativa
 ) {
     // Construtor que transforma a Entidade no DTO automaticamente
     public AssinaturaResponseDTO(Assinatura assinatura) {
@@ -19,7 +20,8 @@ public record AssinaturaResponseDTO(
                 assinatura.getNomeAssinatura(),
                 assinatura.getValor(),
                 assinatura.getDataVencimento(),
-                assinatura.getCategoriaAssinatura()
+                assinatura.getCategoriaAssinatura(),
+                assinatura.getAtiva()
         );
     }
 }
