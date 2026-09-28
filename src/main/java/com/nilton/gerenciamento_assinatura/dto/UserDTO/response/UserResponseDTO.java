@@ -6,14 +6,16 @@ import java.time.LocalDateTime;
 
 public record UserResponseDTO(
         String nome,
-        String email
+        String email,
+        java.math.BigDecimal saldoReservado
        )
 {
 
     public UserResponseDTO(User user){
         this(
                 user.getNome(),
-                user.getEmail()
+                user.getEmail(),
+                user.getSaldoReservado()
         );
     }
 

@@ -17,6 +17,8 @@ public record UserUptadeDTO(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$",
                 message = "A senha deve ter no mínimo 8 caracteres, uma maiúscula, uma minúscula, um número e um caractere especial"
         )
-        String senha) {
+        String senha,
+
+        java.math.BigDecimal saldoReservado) {
 
 }

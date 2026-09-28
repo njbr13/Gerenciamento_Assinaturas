@@ -54,6 +54,12 @@ public class UserService {
         novoUsuario.setNome(user.username());
         novoUsuario.setSenha(senhaCriptografada);
         novoUsuario.setPerfil(Perfil.ROLE_USER);
+        
+        if (user.saldoReservado() != null) {
+            novoUsuario.setSaldoReservado(user.saldoReservado());
+        } else {
+            novoUsuario.setSaldoReservado(java.math.BigDecimal.ZERO);
+        }
 
         return userRepository.save(novoUsuario);
 
@@ -100,6 +106,10 @@ public class UserService {
 
             String novaSenhaCriptografada = passwordEncoder.encode(uptadeDTO.senha());
             newUser.setSenha(novaSenhaCriptografada);
+        }
+
+        if (uptadeDTO.saldoReservado() != null) {
+            newUser.setSaldoReservado(uptadeDTO.saldoReservado());
         }
 
         return userRepository.save(newUser);

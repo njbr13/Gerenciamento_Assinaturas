@@ -11,9 +11,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// O Lombok usa isso para criar os Getters e Setters escondido
-@Entity                     // Avisa ao Spring que essa classe vai virar uma tabela no banco
-@Table(name = "assinaturas") // Define o nome da tabela no PostgreSQL como "assinaturas"
+
+@Entity                     
+@Table(name = "assinaturas")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,15 +22,15 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Assinatura {
 
-    @Id // Avisa que este campo é a Chave Primária (ID único)
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // O banco vai somar +1 a cada novo registro (1, 2, 3...)
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true)
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name = "nomeAssinatura",nullable = false, length = 100) // Não pode ser vazio e tem limite de 100 letras
+    @Column(name = "nomeAssinatura",nullable = false, length = 100) 
     @NotBlank(message = "Insira o nome de uma assinatura")
-    private String nomeAssinatura; // Ex: "Netflix", "Spotify"
+    private String nomeAssinatura;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
@@ -46,21 +46,20 @@ public class Assinatura {
     @Column(name = "valor",nullable = false)
     @PositiveOrZero(message = "O valor não pode ser negativo")
     @NotNull(message = "Insira um valor")
-    private BigDecimal valor; // Valores em dinheiro sempre usamos BigDecimal por precisão
+    private BigDecimal valor;   
 
     @Column(name = "data_vencimento",nullable = false)
     @NotNull(message = "A data de vencimento é obrigatória")
     @FutureOrPresent(message = "A data de vencimento não pode ser no passado")
-    private LocalDate dataVencimento; // Guarda ano-mês-dia do vencimento
-
+    private LocalDate dataVencimento; 
     @Enumerated(EnumType.STRING)
     @Column(name = "categoria", nullable = false, length = 50)
     @NotNull(message = "Insira um categoria. Ex: Streaming, Estudos , etc")
-    private CategoriaAssinatura categoriaAssinatura; // Ex: "Streaming", "Trabalho", "Estudos"
+    private CategoriaAssinatura categoriaAssinatura;
 
     @Column(name = "ativa", nullable = false)
     @Builder.Default
-    private Boolean ativa = true; // Por padrão, toda assinatura nova começa como ativa (true)
+    private Boolean ativa = true;
 
 
     /*public Assinatura(User user,String nomeAssinatura, BigDecimal valor, String categoria, LocalDate dataVencimento, Boolean ativa) {

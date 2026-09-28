@@ -35,5 +35,24 @@ public class EmailService {
 
     }
 
+    public void enviarEmailNotificacaoVencimento(String emailDestino, String nomeAssinatura, int diasParaVencer) {
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom(emailRemetente);
+        message.setTo(emailDestino);
+        message.setSubject("Aviso de Vencimento - " + nomeAssinatura);
+        
+        String tempo = diasParaVencer == 1 ? "1 dia" : diasParaVencer + " dias";
+        
+        message.setText(
+                "Olá!\n\n" +
+                "Este é um aviso amigável de que a sua assinatura de " + nomeAssinatura + " vencerá em " + tempo + ".\n\n" +
+                "Verifique seu saldo para garantir que o pagamento seja processado corretamente.\n\n" +
+                "Atenciosamente,\nEquipe Gerenciador de Assinaturas"
+        );
+
+        javaMailSender.send(message);
+    }
+
 
 }

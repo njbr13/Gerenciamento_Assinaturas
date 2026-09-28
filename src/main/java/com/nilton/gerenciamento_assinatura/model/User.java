@@ -62,6 +62,10 @@ public class User implements UserDetails {
     @Builder.Default
     private List<Assinatura> assinaturas = new ArrayList<>();
 
+    @Column(name = "saldo_reservado", nullable = false)
+    @Builder.Default
+    private java.math.BigDecimal saldoReservado = java.math.BigDecimal.ZERO;
+
 
     @FutureOrPresent(message = "A expiração do token deve ser uma data futura")
     @Column(name = "expiracao_token")

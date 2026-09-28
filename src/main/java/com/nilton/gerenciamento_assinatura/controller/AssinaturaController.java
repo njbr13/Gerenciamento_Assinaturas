@@ -92,5 +92,11 @@ public class AssinaturaController {
         return ResponseEntity.ok(new ApiResponse<>("Gastos calculados com sucesso!", gastos));
     }
 
+    @GetMapping("/gasto-total")
+    public ResponseEntity<ApiResponse<java.math.BigDecimal>> obterGastoTotal(@AuthenticationPrincipal User usuarioLogado) {
+        java.math.BigDecimal gastoTotal = assinaturaService.somarGastoTotais(usuarioLogado);
+        return ResponseEntity.ok(new ApiResponse<>("Gasto total calculado com sucesso!", gastoTotal));
+    }
+
 
 }

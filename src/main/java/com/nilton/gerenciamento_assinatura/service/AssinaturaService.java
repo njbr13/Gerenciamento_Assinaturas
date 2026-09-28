@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AssinaturaService {
 
     private final AssinaturaRepository assinaturaRepository;
+    private final com.nilton.gerenciamento_assinatura.repository.UserRepository userRepository;
 
     @Transactional
     public Assinatura criarAssinatura(CreateAssinaturaDTO assinaturaDTO, User usuarioLogado) {
@@ -38,6 +39,11 @@ public class AssinaturaService {
                 .dataVencimento(assinaturaDTO.dataVencimento())
                 .categoriaAssinatura(assinaturaDTO.categoriaAssinatura())
                 .build();
+                
+        if (usuarioLogado.getSaldoReservado() != null && assinaturaDTO.valor() != null) {
+            usuarioLogado.setSaldoReservado(usuarioLogado.getSaldoReservado().subtract(assinaturaDTO.valor()));
+            userRepository.save(usuarioLogado);
+        }
 
         return assinaturaRepository.save(novaAssinatura);
     }
@@ -102,6 +108,7 @@ public class AssinaturaService {
 
     }
 
+    @Transactional
     public List<CategoriaGastoDTO> obterGastosPorCategoria(User usuarioLogado) {
         List<Assinatura> assinaturas = assinaturaRepository.findByUser_id(usuarioLogado.getId());
         
@@ -152,6 +159,35 @@ public class AssinaturaService {
         return resultado;
     }
 
+    @Transactional
+    public BigDecimal somarGastoTotais(User usuarioLogado){
+
+        List<Assinatura> assinaturas = assinaturaRepository.findByUser_id(usuarioLogado.getId());
+
+        BigDecimal totalGeral = BigDecimal.ZERO;
+
+        for(Assinatura assinatura : assinaturas){
+            if(assinatura.getAtiva()){
+                totalGeral = totalGeral.add(assinatura.getValor());
+            }
+        }
+        return totalGeral;
+    }
+
+    @Transactional
+    public BigDecimal obterSaldoDisponivel(User usuarioLogado) {
+        BigDecimal saldoCarteira = usuarioLogado.getSaldoReservado();
+        BigDecimal saldoReservado = somarGastoTotais(usuarioLogado);
+        
+        if (saldoCarteira == null) {
+            saldoCarteira = BigDecimal.ZERO;
+        }
+        if (saldoReservado == null) {
+            saldoReservado = BigDecimal.ZERO;
+        }
+        
+        return saldoCarteira.subtract(saldoReservado);
+    }
 
 
 }
