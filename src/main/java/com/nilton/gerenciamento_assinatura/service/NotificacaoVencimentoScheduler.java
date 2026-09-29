@@ -17,8 +17,8 @@ public class NotificacaoVencimentoScheduler {
     private final AssinaturaRepository assinaturaRepository;
     private final EmailService emailService;
 
-    // Executa todo dia as 08:00
-    @Scheduled(cron = "0 0 8 * * *")
+    // Executa a cada 1 minuto (Apenas para testes)
+    //@Scheduled(fixedRate = 60000)
     public void verificarVencimentos() {
         List<Assinatura> assinaturas = assinaturaRepository.findAll();
         LocalDate hoje = LocalDate.now();

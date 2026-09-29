@@ -98,5 +98,18 @@ public class AssinaturaController {
         return ResponseEntity.ok(new ApiResponse<>("Gasto total calculado com sucesso!", gastoTotal));
     }
 
+    @GetMapping({"/saldo-disponivel", "/gasto-disponivel"})
+    public ResponseEntity<ApiResponse<java.math.BigDecimal>> obterSaldoDisponivel(@AuthenticationPrincipal User usuarioLogado) {
+        java.math.BigDecimal saldoDisponivel = assinaturaService.obterSaldoDisponivel(usuarioLogado);
+        return ResponseEntity.ok(new ApiResponse<>("Saldo disponível calculado com sucesso!", saldoDisponivel));
+    }
+    
+    
+    @PatchMapping("/reativar/{id}")
+    public ResponseEntity<ApiResponse<AssinaturaResponseDTO>> reativarAssinatura(@PathVariable Long id, @AuthenticationPrincipal User usuarioLogado) {
+        Assinatura assinaturaReativada = assinaturaService.reativarAssinatura(id, usuarioLogado);
+        AssinaturaResponseDTO assinaturaResponseDTO = new AssinaturaResponseDTO(assinaturaReativada);
+        return ResponseEntity.ok(new ApiResponse<>("Assinatura reativada com sucesso!", assinaturaResponseDTO));
+    }
 
 }

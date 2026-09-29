@@ -1,9 +1,13 @@
 package com.nilton.gerenciamento_assinatura.dto.UserDTO;
 
 import com.nilton.gerenciamento_assinatura.model.User;
+
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.PositiveOrZero;
+import java.math.BigDecimal;
 
 public record UserUptadeDTO(
 
@@ -19,6 +23,8 @@ public record UserUptadeDTO(
         )
         String senha,
 
-        java.math.BigDecimal saldoReservado) {
+        @PositiveOrZero(message = "O saldo reservado não pode ser negativo")
+        @Digits(integer = 10, fraction = 2, message = "O saldo deve ter no máximo 10 dígitos inteiros e 2 casas decimais")
+        BigDecimal saldoReservado) {
 
 }

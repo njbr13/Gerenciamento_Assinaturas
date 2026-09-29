@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import java.math.BigDecimal;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,9 +63,10 @@ public class User implements UserDetails {
     @Builder.Default
     private List<Assinatura> assinaturas = new ArrayList<>();
 
-    @Column(name = "saldo_reservado", nullable = false)
+    @Column(name="saldo_reservado", nullable = false)
+    @PositiveOrZero(message = "O saldo reservado deve ser maior ou igual a 0")
     @Builder.Default
-    private java.math.BigDecimal saldoReservado = java.math.BigDecimal.ZERO;
+    private BigDecimal saldoReservado = BigDecimal.ZERO;
 
 
     @FutureOrPresent(message = "A expiração do token deve ser uma data futura")

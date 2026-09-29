@@ -178,6 +178,49 @@ public class UserService {
 
     }
 
+    @Transactional 
+    public void solicitarReativacaoConta(UserReativarContaDTO userReativar){
+       User ativaUser = findByEmail(userReativar.email());
+       
+       if(ativaUser.isAtivo()){
+            throw new RuntimeException("O usuário já está ativo");
+       }
+
+       String token = UUID.randomUUID().toString();
+       LocalDateTime expiracaoToken = LocalDateTime.now().plusMinutes(15);
+
+       ativaUser.setResetToken(token);
+       ativaUser.setExpiracaoToken(expiracaoToken);
+
+       emailService.enviarEmail(userReativar.email(), token);
+       
+       userRepository.save(ativaUser);
+    }
+
+    @Transactional 
+    public void reativarConta(UserAtivarContaDTO ativarContaDTO) {
+        
+        User reativarConta = findByResetToken(ativarContaDTO.token());
+        
+        if(reativarConta.getResetToken() == null || !reativarConta.getResetToken().equals(ativarContaDTO.token())){
+            throw new RuntimeException("Token inválido ou não encontrado.");
+        }
+
+        if(reativarConta.getExpiracaoToken().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Token expirado. Tente novamente uma reativação de conta");
+        }
+
+        reativarConta.setAtivo(true);
+
+        reativarConta.setResetToken(null);
+        reativarConta.setExpiracaoToken(null);
+
+        userRepository.save(reativarConta);
+        
+    }
+
+
+
     public User findByID(Long id) {
 
         Optional<User> user = this.userRepository.findById(id);

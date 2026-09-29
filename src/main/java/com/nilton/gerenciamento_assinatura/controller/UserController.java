@@ -93,4 +93,19 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+   @PostMapping("/solicitar-reativacao")
+public ResponseEntity<ApiResponse> solicitarReativacao(@RequestBody @Valid UserReativarContaDTO dados) {
+    userService.solicitarReativacaoConta(dados);
+    
+    return ResponseEntity.ok(new ApiResponse("Se a conta existir e estiver inativa, um e-mail de reativação foi enviado.", null));
+}
+
+@PatchMapping("/reativar")
+public ResponseEntity<ApiResponse> confirmarReativacao(@RequestBody @Valid UserAtivarContaDTO dados) {
+    userService.reativarConta(dados);
+
+    return ResponseEntity.ok(new ApiResponse("Conta reativada com sucesso! Você já pode fazer login.", null));
+}
+
+
 }

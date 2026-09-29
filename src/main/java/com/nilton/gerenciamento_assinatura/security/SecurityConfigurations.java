@@ -64,6 +64,9 @@ public class SecurityConfigurations {
                     .requestMatchers(HttpMethod.POST, "/usuarios/esqueci-minha-senha").permitAll()
                     .requestMatchers(HttpMethod.POST, "/usuarios/redefinir-senha").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/estoque-critico").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/usuarios/solicitar-reativacao").permitAll()
+                    .requestMatchers(HttpMethod.PATCH, "/usuarios/reativar").permitAll()
+
 
                     // (Opcional) Se você tiver uma rota só para ADMIN, configuraria assim:
                     // .requestMatchers(HttpMethod.GET, "/usuarios").hasRole("ADMIN")

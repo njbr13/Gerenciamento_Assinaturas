@@ -39,12 +39,6 @@ public class AssinaturaService {
                 .dataVencimento(assinaturaDTO.dataVencimento())
                 .categoriaAssinatura(assinaturaDTO.categoriaAssinatura())
                 .build();
-                
-        if (usuarioLogado.getSaldoReservado() != null && assinaturaDTO.valor() != null) {
-            usuarioLogado.setSaldoReservado(usuarioLogado.getSaldoReservado().subtract(assinaturaDTO.valor()));
-            userRepository.save(usuarioLogado);
-        }
-
         return assinaturaRepository.save(novaAssinatura);
     }
 
@@ -176,17 +170,29 @@ public class AssinaturaService {
 
     @Transactional
     public BigDecimal obterSaldoDisponivel(User usuarioLogado) {
-        BigDecimal saldoCarteira = usuarioLogado.getSaldoReservado();
+        User user = userRepository.findById(usuarioLogado.getId()).orElse(usuarioLogado);
+        BigDecimal saldoCarteira = user.getSaldoReservado() != null ? user.getSaldoReservado() : BigDecimal.ZERO;
         BigDecimal saldoReservado = somarGastoTotais(usuarioLogado);
         
-        if (saldoCarteira == null) {
-            saldoCarteira = BigDecimal.ZERO;
-        }
-        if (saldoReservado == null) {
-            saldoReservado = BigDecimal.ZERO;
-        }
-        
         return saldoCarteira.subtract(saldoReservado);
+    }
+
+    public Assinatura reativarAssinatura(Long id , User usuarioLogado){
+
+        Assinatura assinatura = assinaturaRepository.findById(id).orElseThrow(() -> new RuntimeException("Assinatura não encontrada!"));
+
+        if(!assinatura.getUser().getId().equals(usuarioLogado.getId())){
+            throw new RuntimeException("Você não tem permissão para reativar esta assinatura.");
+        }
+
+        if(!assinatura.getAtiva()){
+            assinatura.setAtiva(true);
+        }
+        else {
+            throw new RuntimeException("A assinatura já está ativa.");
+        }
+
+        return assinaturaRepository.save(assinatura);
     }
 
 
